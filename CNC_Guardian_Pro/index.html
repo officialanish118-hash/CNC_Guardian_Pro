@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width,initial-scale=1" name="viewport"/>
+  <title>
+   CNC Guardian Pro
+  </title>
+  <link href="style.css" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js">
+  </script>
+ </head>
+ <body>
+  <aside class="sidebar">
+   <div class="logo">
+    CG
+   </div>
+   <h2>
+    CNC GUARDIAN
+   </h2>
+   <small>
+    Machine Intelligence
+   </small>
+   <hr/>
+   <div class="nav active">
+    ▦ &nbsp; Overview
+   </div>
+   <div class="nav">
+    ◉ &nbsp; Sensor telemetry
+   </div>
+   <div class="nav">
+    ⚑ &nbsp; Fault events
+   </div>
+   <div class="sidefoot">
+    <i>
+    </i>
+    <b>
+     SIMULATION MODE
+    </b>
+    <small>
+     No physical sensors connected
+    </small>
+   </div>
+  </aside>
+  <main>
+   <header>
+    <div>
+     <small class="eyebrow">
+      INDUSTRIAL IOT / CONDITION MONITORING
+     </small>
+     <h1>
+      Machine overview
+     </h1>
+     <p>
+      CNC milling cell &middot; Demo asset CG-01
+     </p>
+    </div>
+    <div class="topright">
+     <span class="pill" id="dataModePill">
+      <i>
+      </i>
+      SIMULATED LIVE DATA
+     </span>
+     <b id="clock">
+      --:--:--
+     </b>
+    </div>
+   </header>
+   <section class="hero">
+    <article class="panel machine">
+     <div class="panelhead">
+      <div>
+       <small class="eyebrow">
+        ASSET VISUALIZATION
+       </small>
+       <h3>
+        2D CNC machine
+       </h3>
+      </div>
+      <span class="badge good" id="machineChip">
+       RUNNING
+      </span>
+     </div>
+     <div class="machineview">
+      <svg aria-label="Schematic 2D CNC machine, not to scale" role="img" viewbox="0 0 620 290">
+       <defs>
+        <lineargradient id="metal">
+         <stop stop-color="#a8bdd1">
+         </stop>
+         <stop offset="1" stop-color="#506781">
+         </stop>
+        </lineargradient>
+       </defs>
+       <rect fill="#101d2d" height="244" id="machineFrame" rx="12" stroke="#334a63" stroke-width="2" width="524" x="48" y="22">
+       </rect>
+       <rect fill="#0b1523" height="192" rx="6" stroke="#263c54" width="480" x="70" y="42">
+       </rect>
+       <rect fill="#253c55" height="13" rx="3" width="440" x="90" y="57">
+       </rect>
+       <rect fill="url(#metal)" height="140" rx="4" width="20" x="105" y="70">
+       </rect>
+       <rect fill="url(#metal)" height="140" rx="4" width="20" x="495" y="70">
+       </rect>
+       <rect fill="#6d849d" height="12" rx="3" width="370" x="125" y="82">
+       </rect>
+       <rect fill="url(#metal)" height="25" id="spindleCarriage" rx="5" width="116" x="252" y="94">
+       </rect>
+       <rect fill="#20364e" height="50" id="spindleHousing" rx="5" stroke="#8298af" width="68" x="276" y="117">
+       </rect>
+       <g id="spindleAssembly">
+        <rect fill="#91a7bc" height="40" id="spindle" rx="3" width="22" x="299" y="162">
+        </rect>
+        <path d="M305 201 L315 201 L310 224 Z" fill="#e5edf5" id="tool">
+        </path>
+        <path d="M307 207 L313 207" opacity=".7" stroke="#ffda8a" stroke-width="1.5">
+        </path>
+       </g>
+       <rect fill="#71869b" height="12" rx="3" width="270" x="175" y="224">
+       </rect>
+       <rect fill="#d18a42" height="13" id="workpiece" rx="3" width="180" x="220" y="210">
+       </rect>
+       <g id="driveMotor">
+        <rect fill="#29435b" height="32" rx="5" stroke="#7891aa" width="48" x="392" y="106">
+        </rect>
+        <path d="M400 114h32 M400 121h32 M400 128h32" stroke="#7891aa" stroke-width="2">
+        </path>
+        <text fill="#a8c0d7" font-size="8" text-anchor="middle" x="416" y="101">
+         M1
+        </text>
+       </g>
+       <line stroke="#3b5876" stroke-dasharray="4 5" x1="310" x2="310" y1="34" y2="252">
+       </line>
+       <text fill="#8096ad" font-size="10" x="82" y="255">
+        X AXIS
+       </text>
+       <text fill="#8096ad" font-size="10" x="425" y="255">
+        SCHEMATIC / NOT TO SCALE
+       </text>
+       <g id="tempSensor">
+        <circle cx="345" cy="137" fill="#36d6a2" r="7" stroke="#d7fff6" stroke-width="2">
+        </circle>
+        <text fill="#a8c0d7" font-size="10" x="357" y="140">
+         T1
+        </text>
+       </g>
+       <g id="vibSensor">
+        <circle cx="440" cy="218" fill="#5c8dff" r="7" stroke="#d7e7ff" stroke-width="2">
+        </circle>
+        <text fill="#a8c0d7" font-size="10" x="451" y="221">
+         V1
+        </text>
+       </g>
+      </svg>
+     </div>
+     <div class="legend">
+      <span>
+       ● T1 Temperature
+      </span>
+      <span>
+       ● V1 Vibration
+      </span>
+      <span class="muted">
+       Illustrative schematic
+      </span>
+     </div>
+     <div class="component-status" id="componentStatus">
+      <span class="status-dot">
+      </span>
+      <span id="componentText">
+       No affected component detected
+      </span>
+     </div>
+     <div class="buttons">
+      <button id="start">
+       ▶ Start
+      </button>
+      <button class="secondary" id="pause">
+       Ⅱ Pause
+      </button>
+      <button class="secondary" id="reset">
+       &orarr; Reset
+      </button>
+     </div>
+    </article>
+    <article class="panel health">
+     <div class="panelhead">
+      <div>
+       <small class="eyebrow">
+        CURRENT CONDITION
+       </small>
+       <h3>
+        Health status
+       </h3>
+      </div>
+      <span class="badge good" id="healthBadge">
+       NORMAL
+      </span>
+     </div>
+     <div class="scoreRow">
+      <div class="score" id="score">
+       96
+       <span>
+        /100
+       </span>
+      </div>
+      <div>
+       <b id="summary">
+        Operating within demo limits
+       </b>
+       <p id="description">
+        No simulated critical conditions detected.
+       </p>
+      </div>
+     </div>
+     <div class="meter">
+      <div id="meterFill">
+      </div>
+     </div>
+     <div class="stats">
+      <div>
+       <small>
+        Active alerts
+       </small>
+       <b id="alerts">
+        0
+       </b>
+      </div>
+      <div>
+       <small>
+        Samples
+       </small>
+       <b id="samples">
+        0
+       </b>
+      </div>
+      <div>
+       <small>
+        Last update
+       </small>
+       <b id="last">
+        --:--:--
+       </b>
+      </div>
+     </div>
+     <div class="alertbox" id="alertbox">
+      <b id="banner">
+       &checkmark; All systems normal
+      </b>
+      <small id="bannerText">
+       Monitoring simulated telemetry.
+      </small>
+     </div>
+     <div aria-live="polite" class="diagnosis" id="diagnosisPanel">
+      <div class="diagnosis-heading">
+       <div>
+        <small class="eyebrow">
+         RULE-BASED ANALYSIS
+        </small>
+        <h3>
+         Fault diagnosis assistant
+        </h3>
+       </div>
+       <span class="diagnosis-badge normal" id="diagnosisSeverity">
+        NORMAL
+       </span>
+      </div>
+      <h4 id="diagnosisTitle">
+       No abnormal pattern detected
+      </h4>
+      <p id="diagnosisSummary">
+       The simulated sensor readings are within the demonstration ranges.
+      </p>
+      <div class="diagnosis-detail">
+       <b>
+        Evidence from sensors
+       </b>
+       <ul id="diagnosisEvidence">
+        <li>
+         No abnormal readings at this time.
+        </li>
+       </ul>
+      </div>
+      <div class="diagnosis-detail">
+       <b>
+        Possible causes
+       </b>
+       <p id="diagnosisCauses">
+        No fault hypothesis is currently active.
+       </p>
+      </div>
+      <div class="diagnosis-detail">
+       <b>
+        Suggested inspection
+       </b>
+       <p id="diagnosisAction">
+        Continue observing the trend during this simulation.
+       </p>
+      </div>
+      <small class="diagnosis-note">
+       Rule-based suggestions only; not a confirmed diagnosis.
+      </small>
+     </div>
+     <label for="scenario">
+      DEMO SCENARIO
+     </label>
+     <select id="scenario">
+      <option value="normal">
+       Normal operation
+      </option>
+      <option value="overheat">
+       Overheating
+      </option>
+      <option value="vibration">
+       Abnormal vibration
+      </option>
+      <option value="electrical">
+       Electrical abnormality
+      </option>
+      <option value="multi">
+       Multiple-sensor fault
+      </option>
+     </select>
+     <button class="danger full" id="trigger">
+      Trigger selected scenario
+     </button>
+    </article>
+   </section>
+
+   <section class="panel tools-panel" aria-labelledby="profileTitle">
+    <div class="panelhead">
+     <div>
+      <small class="eyebrow">SETUP &amp; REPORTING</small>
+      <h3 id="profileTitle">Machine Profile</h3>
+      <p class="threshold-intro">Profiles load illustrative demo thresholds. They are not manufacturer-approved machine settings.</p>
+     </div>
+     <span class="badge normal" id="profileBadge">GENERAL DEMO</span>
+    </div>
+    <div class="profile-row">
+     <div class="profile-control">
+      <label for="machineProfile">DEMO PROFILE</label>
+      <select id="machineProfile">
+       <option value="general">General Demo</option>
+       <option value="precision">Precision Milling (demo)</option>
+       <option value="heavy">Heavy Cutting (demo)</option>
+      </select>
+     </div>
+     <button id="applyProfile" type="button">Load profile</button>
+     <button id="downloadReport" class="secondary" type="button">Download fault report (.txt)</button>
+    </div>
+    <p id="profileMessage" class="tool-message" role="status" aria-live="polite">General demo profile is selected.</p>
+   </section>
+
+   <section class="panel tools-panel" aria-labelledby="calibrationTitle">
+    <div class="panelhead">
+     <div>
+      <small class="eyebrow">SIMULATION ONLY</small>
+      <h3 id="calibrationTitle">Sensor Calibration Offsets</h3>
+      <p class="threshold-intro">Offsets are added to simulated readings to demonstrate calibration workflow. This does not calibrate physical sensors.</p>
+     </div>
+     <span class="badge normal" id="calibrationBadge">ZERO OFFSETS</span>
+    </div>
+    <div class="calibration-grid">
+     <div><label for="offsetTemperature">Temperature offset (°C)</label><input id="offsetTemperature" type="number" min="-20" max="20" step="0.1" value="0"></div>
+     <div><label for="offsetVibration">Vibration offset (mm/s*)</label><input id="offsetVibration" type="number" min="-5" max="5" step="0.1" value="0"></div>
+     <div><label for="offsetAcceleration">Acceleration offset (g*)</label><input id="offsetAcceleration" type="number" min="-2" max="2" step="0.05" value="0"></div>
+     <div><label for="offsetVoltage">Voltage offset (V*)</label><input id="offsetVoltage" type="number" min="-50" max="50" step="1" value="0"></div>
+     <div><label for="offsetCurrent">Current offset (A*)</label><input id="offsetCurrent" type="number" min="-5" max="5" step="0.1" value="0"></div>
+    </div>
+    <div class="threshold-actions">
+     <p id="calibrationMessage" class="tool-message" role="status" aria-live="polite">All simulated calibration offsets are zero.</p>
+     <div><button id="resetCalibration" class="secondary" type="button">Reset offsets</button><button id="applyCalibration" type="button">Apply offsets</button></div>
+    </div>
+   </section>
+
+   <section class="panel threshold-panel" aria-labelledby="thresholdTitle">
+    <div class="panelhead">
+     <div>
+      <small class="eyebrow">CONFIGURATION</small>
+      <h3 id="thresholdTitle">Sensor Threshold Settings</h3>
+      <p class="threshold-intro">Adjust the illustrative demo limits. Changes apply when you select Apply thresholds.</p>
+     </div>
+     <span class="badge normal" id="thresholdBadge">DEMO LIMITS</span>
+    </div>
+
+    <div class="threshold-grid">
+     <fieldset class="threshold-group">
+      <legend>Temperature (°C)</legend>
+      <label for="tempWarning">Warning at</label>
+      <input id="tempWarning" type="number" min="0" max="200" step="0.5" value="55">
+      <label for="tempCritical">Critical at</label>
+      <input id="tempCritical" type="number" min="0" max="200" step="0.5" value="60">
+     </fieldset>
+
+     <fieldset class="threshold-group">
+      <legend>Vibration (mm/s*)</legend>
+      <label for="vibrationWarning">Warning at</label>
+      <input id="vibrationWarning" type="number" min="0" max="100" step="0.1" value="4">
+      <label for="vibrationCritical">Critical at</label>
+      <input id="vibrationCritical" type="number" min="0" max="100" step="0.1" value="5">
+     </fieldset>
+
+     <fieldset class="threshold-group">
+      <legend>Acceleration (g*)</legend>
+      <label for="accelerationWarning">Warning at</label>
+      <input id="accelerationWarning" type="number" min="0" max="20" step="0.05" value="0.8">
+      <label for="accelerationCritical">Critical at</label>
+      <input id="accelerationCritical" type="number" min="0" max="20" step="0.05" value="1">
+     </fieldset>
+
+     <fieldset class="threshold-group">
+      <legend>Voltage (V*)</legend>
+      <label for="voltageLow">Lower boundary</label>
+      <input id="voltageLow" type="number" min="0" max="500" step="1" value="220">
+      <label for="voltageHigh">Upper boundary</label>
+      <input id="voltageHigh" type="number" min="0" max="500" step="1" value="240">
+     </fieldset>
+
+     <fieldset class="threshold-group">
+      <legend>Current (A*)</legend>
+      <label for="currentWarning">Warning at</label>
+      <input id="currentWarning" type="number" min="0" max="100" step="0.1" value="4.5">
+      <label for="currentCritical">Critical at</label>
+      <input id="currentCritical" type="number" min="0" max="100" step="0.1" value="5">
+     </fieldset>
+    </div>
+
+    <div class="threshold-actions">
+     <p id="thresholdMessage" role="status" aria-live="polite">Current demo thresholds are active.</p>
+     <div>
+      <button class="secondary" id="resetThresholds" type="button">Restore defaults</button>
+      <button id="applyThresholds" type="button">Apply thresholds</button>
+     </div>
+    </div>
+    <small class="diagnosis-note">*Illustrative values only. Validate real-machine limits with the manufacturer and qualified engineering staff before any practical use.</small>
+   </section>
+
+   <section class="panel connection-panel" aria-labelledby="connectionTitle">
+    <div class="panelhead">
+     <div>
+      <small class="eyebrow">DATA SOURCE</small>
+      <h3 id="connectionTitle">Simulation &amp; ESP32 connection</h3>
+     </div>
+     <span class="badge good" id="connectionBadge">SIMULATION</span>
+    </div>
+    <p class="connection-intro">Keep using simulated data, or connect this dashboard to an ESP32 that serves JSON telemetry on your local Wi-Fi network.</p>
+    <div class="connection-controls">
+     <div class="field">
+      <label for="dataSource">Data source</label>
+      <select id="dataSource">
+       <option value="simulation">Simulation (default)</option>
+       <option value="esp32">ESP32 HTTP endpoint</option>
+      </select>
+     </div>
+     <div class="field endpoint-field">
+      <label for="esp32Endpoint">ESP32 endpoint URL</label>
+      <input id="esp32Endpoint" type="url" value="http://192.168.1.50/api/status" placeholder="http://192.168.1.50/api/status" spellcheck="false" autocomplete="url">
+     </div>
+     <div class="field connect-action">
+      <label>&nbsp;</label>
+      <button id="connectEsp32" type="button">Connect / Test</button>
+     </div>
+    </div>
+    <div class="connection-status" id="connectionStatus" role="status" aria-live="polite">Simulation is active. No hardware is connected.</div>
+    <p class="connection-note"><strong>Important:</strong> Selecting ESP32 mode does not create physical sensor readings by itself. The ESP32 must be powered, reachable on the same network, and serve the documented JSON format. Start with the included demo firmware; it generates test values, not real sensor data.</p>
+   </section>
+
+   <section class="sensors">
+    <article class="sensor">
+     <div class="sensorHead">
+      <span class="icon orange">
+       ℃
+      </span>
+      <small>
+       T1 &middot; THERMAL
+      </small>
+     </div>
+     <p>
+      Temperature
+     </p>
+     <strong>
+      <span id="temperatureVal">
+       42.0
+      </span>
+      <small>
+       &deg;C
+      </small>
+     </strong>
+     <div class="sensorFoot">
+      <b id="temperatureState">
+       NORMAL
+      </b>
+      <span>
+       Limit: 60&deg;C*
+      </span>
+     </div>
+     <div class="track">
+      <i id="temperatureBar">
+      </i>
+     </div>
+    </article>
+    <article class="sensor">
+     <div class="sensorHead">
+      <span class="icon purple">
+       〰
+      </span>
+      <small>
+       V1 &middot; VIBRATION
+      </small>
+     </div>
+     <p>
+      Vibration indicator
+     </p>
+     <strong>
+      <span id="vibrationVal">
+       2.1
+      </span>
+      <small>
+       mm/s*
+      </small>
+     </strong>
+     <div class="sensorFoot">
+      <b id="vibrationState">
+       NORMAL
+      </b>
+      <span>
+       Limit: 5.0*
+      </span>
+     </div>
+     <div class="track">
+      <i id="vibrationBar">
+      </i>
+     </div>
+    </article>
+    <article class="sensor">
+     <div class="sensorHead">
+      <span class="icon blue">
+       &nearrow;
+      </span>
+      <small>
+       A1 &middot; MOTION
+      </small>
+     </div>
+     <p>
+      Acceleration
+     </p>
+     <strong>
+      <span id="accelerationVal">
+       0.42
+      </span>
+      <small>
+       g*
+      </small>
+     </strong>
+     <div class="sensorFoot">
+      <b id="accelerationState">
+       NORMAL
+      </b>
+      <span>
+       Limit: 1.0*
+      </span>
+     </div>
+     <div class="track">
+      <i id="accelerationBar">
+      </i>
+     </div>
+    </article>
+    <article class="sensor">
+     <div class="sensorHead">
+      <span class="icon yellow">
+       ϟ
+      </span>
+      <small>
+       E1 &middot; ELECTRICAL
+      </small>
+     </div>
+     <p>
+      Voltage
+     </p>
+     <strong>
+      <span id="voltageVal">
+       230.0
+      </span>
+      <small>
+       V*
+      </small>
+     </strong>
+     <div class="sensorFoot">
+      <b id="voltageState">
+       NORMAL
+      </b>
+      <span>
+       220&ndash;240*
+      </span>
+     </div>
+     <div class="track">
+      <i id="voltageBar">
+      </i>
+     </div>
+    </article>
+    <article class="sensor">
+     <div class="sensorHead">
+      <span class="icon green">
+       A
+      </span>
+      <small>
+       E2 &middot; LOAD
+      </small>
+     </div>
+     <p>
+      Current
+     </p>
+     <strong>
+      <span id="currentVal">
+       3.2
+      </span>
+      <small>
+       A*
+      </small>
+     </strong>
+     <div class="sensorFoot">
+      <b id="currentState">
+       NORMAL
+      </b>
+      <span>
+       Limit: 5.0*
+      </span>
+     </div>
+     <div class="track">
+      <i id="currentBar">
+      </i>
+     </div>
+    </article>
+   </section>
+
+   <section class="panel history-panel" aria-labelledby="historyTitle">
+    <div class="panelhead history-heading">
+     <div>
+      <small class="eyebrow">DATA LOGGING &amp; HISTORICAL ANALYSIS</small>
+      <h3 id="historyTitle">Recorded sensor history</h3>
+      <p class="threshold-intro">Review saved samples, analyse simulated performance, and export them as CSV.</p>
+     </div>
+     <div class="history-actions">
+      <label for="historyRange">TIME RANGE</label>
+      <select id="historyRange">
+       <option value="1">Last 1 minute</option>
+       <option value="5" selected>Last 5 minutes</option>
+       <option value="15">Last 15 minutes</option>
+       <option value="all">All session data</option>
+      </select>
+      <button id="downloadCsv" type="button">Download CSV</button>
+     </div>
+    </div>
+    <div class="history-metrics">
+     <div><small>Samples in range</small><b id="historySamples">0</b></div>
+     <div><small>Critical samples</small><b id="historyCritical">0</b></div>
+     <div><small>Warning samples</small><b id="historyWarnings">0</b></div>
+     <div><small>Peak temperature</small><b id="historyPeakTemp">—</b></div>
+     <div><small>Peak vibration</small><b id="historyPeakVibration">—</b></div>
+    </div>
+    <div class="history-metrics performance-metrics" aria-label="Performance analytics">
+     <div><small>Simulated availability</small><b id="historyAvailability">—</b></div>
+     <div><small>Estimated simulated downtime</small><b id="historyDowntime">0.00 min</b></div>
+     <div class="fault-frequency"><small>Most frequent alert diagnoses</small><ul id="faultFrequencyList"><li>No warning or critical samples in this range.</li></ul></div>
+    </div>
+    <div class="history-footer-actions">
+     <small>Stored locally in this browser (up to 5,000 samples). This is not cloud backup.</small>
+     <button id="clearHistory" class="secondary" type="button">Clear saved history</button>
+    </div>
+    <div class="tablewrap history-table-wrap">
+     <table>
+      <thead><tr>
+       <th>TIME</th><th>TEMP °C</th><th>VIBRATION*</th><th>ACCELERATION*</th>
+       <th>VOLTAGE*</th><th>CURRENT*</th><th>MACHINE STATUS</th><th>DIAGNOSIS</th>
+      </tr></thead>
+      <tbody id="historyRows">
+       <tr><td colspan="8" class="empty">Samples will appear as the simulation runs.</td></tr>
+      </tbody>
+     </table>
+    </div>
+    <p class="tool-message" id="historyMessage" role="status" aria-live="polite">History is stored locally in this browser. Export CSV for a separate backup.</p>
+   </section>
+
+   <section class="charts">
+    <article class="panel chart">
+     <div class="panelhead">
+      <div>
+       <small class="eyebrow">
+        LIVE TELEMETRY
+       </small>
+       <h3>
+        Temperature trend
+       </h3>
+      </div>
+      <span>
+       &deg;C
+      </span>
+     </div>
+     <div class="plot">
+      <canvas id="temperatureChart">
+      </canvas>
+     </div>
+    </article>
+    <article class="panel chart">
+     <div class="panelhead">
+      <div>
+       <small class="eyebrow">
+        LIVE TELEMETRY
+       </small>
+       <h3>
+        Vibration trend
+       </h3>
+      </div>
+      <span>
+       mm/s*
+      </span>
+     </div>
+     <div class="plot">
+      <canvas id="vibrationChart">
+      </canvas>
+     </div>
+    </article>
+    <article class="panel chart">
+     <div class="panelhead">
+      <div>
+       <small class="eyebrow">
+        LIVE TELEMETRY
+       </small>
+       <h3>
+        Acceleration trend
+       </h3>
+      </div>
+      <span>
+       g*
+      </span>
+     </div>
+     <div class="plot">
+      <canvas id="accelerationChart">
+      </canvas>
+     </div>
+    </article>
+    <article class="panel chart">
+     <div class="panelhead">
+      <div>
+       <small class="eyebrow">
+        LIVE TELEMETRY
+       </small>
+       <h3>
+        Voltage trend
+       </h3>
+      </div>
+      <span>
+       V*
+      </span>
+     </div>
+     <div class="plot">
+      <canvas id="voltageChart">
+      </canvas>
+     </div>
+    </article>
+    <article class="panel chart wide">
+     <div class="panelhead">
+      <div>
+       <small class="eyebrow">
+        LIVE TELEMETRY
+       </small>
+       <h3>
+        Current trend
+       </h3>
+      </div>
+      <span>
+       A*
+      </span>
+     </div>
+     <div class="plot">
+      <canvas id="currentChart">
+      </canvas>
+     </div>
+    </article>
+   </section>
+   <article class="panel events">
+    <div class="panelhead">
+     <div>
+      <small class="eyebrow">
+       EVENT STREAM
+      </small>
+      <h3>
+       Fault &amp; event history
+      </h3>
+     </div>
+     <button class="secondary" id="clear">
+      Clear log
+     </button>
+    </div>
+    <div class="tablewrap">
+     <table>
+      <thead>
+       <tr>
+        <th>
+         TIME
+        </th>
+        <th>
+         EVENT
+        </th>
+        <th>
+         RULE
+        </th>
+        <th>
+         SEVERITY
+        </th>
+        <th>
+         STATUS
+        </th>
+       </tr>
+      </thead>
+      <tbody id="events">
+       <tr>
+        <td class="empty" colspan="5">
+         No events yet. Trigger a scenario to test alerts.
+        </td>
+       </tr>
+      </tbody>
+     </table>
+    </div>
+   </article>
+   <p class="disclaimer">
+    * Demonstration thresholds and readings are illustrative only. All telemetry is simulated; this prototype is not connected to a real CNC machine and is not a safety or shutdown system.
+   </p>
+   <footer>
+    CNC GUARDIAN &middot; PROTOTYPE v0.9
+    <span>
+     Machine-condition monitoring demonstration
+    </span>
+   </footer>
+  </main>
+  <script src="script.js">
+  </script>
+ </body>
+</html>

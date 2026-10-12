@@ -1,0 +1,63 @@
+CNC GUARDIAN PRO v0.9 — ESP32 CONNECTION GUIDE
+==============================================
+
+1. What this version does
+-------------------------
+The dashboard can remain in Simulation mode or poll a user-provided ESP32 HTTP
+endpoint. It expects JSON at GET /api/status with these numeric fields:
+
+{
+  "temperature": 42.5,
+  "vibration": 2.1,
+  "acceleration": 0.42,
+  "voltage": 230.0,
+  "current": 3.2,
+  "source": "esp32-demo"
+}
+
+All five fields are required. Values are treated as numeric readings in the same
+units shown in the dashboard. Ensure units match your actual sensors before use.
+
+2. Try the included demo firmware
+---------------------------------
+- Install Arduino IDE and the ESP32 board support package.
+- Open esp32_demo.ino.
+- Replace WIFI_NAME and WIFI_PASSWORD with your local Wi-Fi credentials.
+- Select the correct ESP32 board and serial port, then upload.
+- Open Serial Monitor at 115200 baud and note the IP address printed by the board.
+- Put http://<ESP32-IP>/api/status in the dashboard endpoint field.
+- Select “ESP32 HTTP endpoint” and click “Connect / Test”.
+
+The sketch deliberately generates simulated values. A successful connection proves
+only that network communication and JSON parsing work; it does not prove sensor
+measurement.
+
+3. Add actual sensors only after planning the interface
+------------------------------------------------------
+- Select sensors based on temperature range, vibration bandwidth, mounting, and
+  the measurement requirements of the intended machine.
+- Check every sensor's output type, voltage, current, isolation and ADC requirements.
+- ESP32 GPIO/ADC pins are not industrial-voltage inputs. NEVER connect CNC mains,
+  motor-drive outputs, or 230 V directly to the ESP32. Use properly rated, isolated
+  measurement equipment and qualified supervision for electrical measurements.
+- For vibration/acceleration, use a suitable accelerometer or industrial vibration
+  transmitter and appropriate sampling/filtering; simple low-rate HTTP polling is
+  not a substitute for high-rate vibration acquisition.
+- Calibrate and validate readings against a trusted instrument and machine maker's
+  specifications before interpreting thresholds.
+
+4. Network/browser troubleshooting
+----------------------------------
+- Confirm laptop and ESP32 are on the same Wi-Fi/LAN.
+- Open http://<ESP32-IP>/api/status in a browser and check that JSON appears.
+- Ensure the endpoint is exactly /api/status and has all five numeric fields.
+- Keep the ESP32 and laptop on a trusted local network. Do not port-forward this
+  demo server to the public internet.
+- If the browser blocks requests from file://, run the dashboard using a local
+  development server such as VS Code Live Server.
+
+Safety disclaimer
+-----------------
+This is an educational prototype, not a certified monitoring, protection, or
+machine-shutdown system. Readings and thresholds are not validated safety limits.
+Do not use it to make safety-critical decisions or control a CNC machine.
